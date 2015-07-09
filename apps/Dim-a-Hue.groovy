@@ -17,7 +17,7 @@ definition(
     name: "Dim-a-Hue",
     namespace: "625alex",
     author: "Alex Malikov",
-    description: "Control Hue with a set of dimmers. Requires 1+ color light and 1-3 dimmers.",
+    description: "Set hue, saturation and brightness of lights with auxiliary dimmers. Requires 1+ color light and 1-3 dimmers.",
     category: "Fun & Social",
     iconUrl: "http://cdn.device-icons.smartthings.com/lights/philips/hue-multi.png",
     iconX2Url: "http://cdn.device-icons.smartthings.com/lights/philips/hue-multi@2x.png",
@@ -26,15 +26,15 @@ definition(
 
 preferences {
 	section("Control these light...") {
-		input "slaves", "capability.colorControl", title: "Choose lights with control", required: false, multiple: true
+		input "slaves", "capability.colorControl", title: "Lights", required: false, multiple: true
 	}
 	
 	section("Controllers...") {
-		input "masterHue", "capability.switchLevel", title: "Choose dimmer that controls hue", required: false, multiple: false
-		input "masterSaturation", "capability.switchLevel", title: "Choose dimmer that controls saturation", required: false, multiple: false
-		input "masterLevel", "capability.switchLevel", title: "Choose dimmer that controls brightness", required: false, multiple: false
-		paragraph ""
-		input "masterSwitch", "capability.switch", title: "Choose switch that turns color lights on and off", required: false, multiple: false
+		input "masterHue", "capability.switchLevel", title: "Hue controller", required: false, multiple: false
+		input "masterSaturation", "capability.switchLevel", title: "Saturation controller", required: false, multiple: false
+		input "masterLevel", "capability.switchLevel", title: "Brightness controller", required: false, multiple: false
+		paragraph "\n\n"
+		input "masterSwitch", "capability.switch", title: "On/Off controller", required: false, multiple: false
 	}
 }
 
