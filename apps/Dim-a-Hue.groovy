@@ -17,7 +17,7 @@ definition(
     name: "Dim-a-Hue",
     namespace: "625alex",
     author: "Alex Malikov",
-    description: "Set hue, saturation and brightness of lights with auxiliary dimmers. Requires 1+ color light and 1-3 dimmers.",
+    description: "Use dimmers to set hue, saturation and brightness of lights. Requires 1+ color light and 1-3 dimmers.",
     category: "Fun & Social",
     iconUrl: "http://cdn.device-icons.smartthings.com/lights/philips/hue-multi.png",
     iconX2Url: "http://cdn.device-icons.smartthings.com/lights/philips/hue-multi@2x.png",
