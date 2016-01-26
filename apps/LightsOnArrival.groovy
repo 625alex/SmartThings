@@ -52,12 +52,31 @@ def initialize() {
 }
 
 def presenseHandler(evt) {
-	if (evt.value == "present") {
+    if (evt.value == "present" && !state.peopleWereHome) {
         def lightSensorState = luminance.currentIlluminance
         log.debug "SENSOR = $lightSensorState"
-        if (lightSensorState && lightSensorState < 20) {
+        if (lightSensorState != null && lightSensorState < 20) {
             log.trace "light.on() ... [luminance: ${lightSensorState}]"
             switch1.on()
+            sendNotificationEvent("Turning switches on because it's dark, nobody was home, and you've arrived.")
         }
     }
+
+    state.peopleWereHome = isAnyoneHome()
+}
+
+// return the number of people that are home
+// From: https://github.com/imbrianj/nobody_home/blob/master/nobody_home.groovy
+private isAnyoneHome()
+{
+    def result = 0
+    // iterate over our people variable that we defined
+    // in the preferences method
+    for (person in people) {
+        if (person.currentPresence == "present") {
+            result++
+        }
+    }
+    log.trace "isAnyoneHome(): ${result}"
+    return result
 }
