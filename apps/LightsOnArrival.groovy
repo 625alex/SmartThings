@@ -28,11 +28,15 @@ preferences {
 		input "people", "capability.presenceSensor", multiple: true
 	}
     section("And it's dark...") {
-		input "luminance", "capability.illuminanceMeasurement", title: "Where?"
+		input "luminance", "capability.illuminanceMeasurement", title: "Based on which luminance sensor?"
 	}
     section("Turn on these lights...") {
-		input "switch1", "capability.switch", multiple: true, title: "Where?"
+		input "switch1", "capability.switch", multiple: true, title: "Which ones?"
 	}
+    section("Advanced options") {
+    	input "luminanceThreshold", "number", title: "Luminance threshold (default 1500)", required: true, defaultValue: 1500, range: "1..*", multiple: false
+    	input "requireAllGone", "bool", title: "Require everyone to be gone first?", required: true, defaultValue: true, multiple: false
+    }
 }
 
 def installed() {
@@ -49,16 +53,28 @@ def updated() {
 
 def initialize() {
 	subscribe(people, "presence", presenseHandler)
+    state.peopleWereHome = isAnyoneHome()
 }
 
 def presenseHandler(evt) {
-    if (evt.value == "present" && !state.peopleWereHome) {
+    def peopleConditionsMet = !state.peopleWereHome || !requireAllGone
+
+	if (evt.value == "present" && peopleConditionsMet) {
         def lightSensorState = luminance.currentIlluminance
         log.debug "SENSOR = $lightSensorState"
-        if (lightSensorState != null && lightSensorState < 20) {
-            log.trace "light.on() ... [luminance: ${lightSensorState}]"
+        if (lightSensorState != null && lightSensorState <= luminanceThreshold) {
+            def person = getPerson(evt)
+			def displayName = person.displayName
+            
+            log.trace "light.on() ... [luminance: ${lightSensorState}] ... [person: ${displayName}]"
             switch1.on()
-            sendNotificationEvent("Turning switches on because it's dark, nobody was home, and you've arrived.")
+            
+            if (requireAllGone) {
+            	sendNotificationEvent("Turning switches on because it's dark, nobody was home, and " + displayName + " arrived.")
+            }
+            else {
+            	sendNotificationEvent("Turning switches on because it's dark and " + displayName + " arrived.")
+            }
         }
     }
 
@@ -79,4 +95,9 @@ private isAnyoneHome()
     }
     log.trace "isAnyoneHome(): ${result}"
     return result
+}
+
+// From: https://community.smartthings.com/t/determine-who-left-or-arrived/20782
+private getPerson(evt) {
+	people.find{evt.deviceId == it.id}
 }
